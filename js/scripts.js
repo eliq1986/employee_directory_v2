@@ -32,47 +32,69 @@ function createHtmlCardTemplate({ picture, name, email, location }) {
       <div class="card-info-container">
           <h3 id="name" class="card-name cap">${name.first} ${name.last}</h3>
           <p class="card-text">${email}</p>
-          <p class="card-text cap">${location.city}, ${location.state}</p>
+          <p class="card-text cap">${location.state}</p>
       </div>
   </div>
   `
 
 }
 
-function buildModal(profile) {
-  console.log(profile)
-  const galleryDiv = document.querySelector("#gallery");
+function buildModal({ picture, name, email, location}) {
+
+
+
+  const body = document.querySelector("body");
   const modal = `
    <div class="modal-container">
       <div class="modal">
           <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
           <div class="modal-info-container">
-              <img class="modal-img" src="https://placehold.it/125x125" alt="profile picture">
-              <h3 id="name" class="modal-name cap">name</h3>
-              <p class="modal-text">email</p>
-              <p class="modal-text cap">city</p>
+              <img class="modal-img" src=${picture.large} alt="profile picture">
+              <h3 id="name" class="modal-name cap">${name.first} ${name.last}</h3>
+              <p class="modal-text">${email}</p>
+              <p class="modal-text cap">${location.city}</p>
               <hr>
               <p class="modal-text">(555) 555-5555</p>
-              <p class="modal-text">123 Portland Ave., Portland, OR 97204</p>
+              <p class="modal-text">${location.street}, ${location.state} ${location.postcode}</p>
               <p class="modal-text">Birthday: 10/21/2015</p>
           </div>
       </div>
   `
-  galleryDiv.insertAdjacentHTML("beforeend", modal);
+  body.insertAdjacentHTML("beforeend", modal);
+  addEventListener();
 
+}
+
+function addEventListener() {
+  console.log("clicked");
+  document.querySelector("#modal-close-btn").addEventListener("click",()=> {
+    console.log("x was clicked");
+      document.querySelector(".modal-container").style.display = "none";
+  });
 }
 
 
 getRandomUsers().then(data => {
-   data.results.forEach( profile => appendCardsToDOM(profile));
+
+  const { results } = data;
+
+   results.forEach( profile => appendCardsToDOM(profile));
 
    document.querySelector("#gallery").addEventListener("click", event=> {
-    if(event.target.tagName === "P" || event.target.tagName === "H3" || event.target.tagName === "IMG") {
-      const index = [...document.querySelectorAll(".card")];
-      console.log(index.indexOf(event.target));
-     } else if (event.target.getAttribute("class") === "card-info-container" || event.target.getAttribute("class") === "card-img-container") {
-       // buildModal(data);
-     }
+    if(event.target.className === "card-img" || event.target.className === "card-name cap" || event.target.className === "card-text cap") {
+
+      const index = [...document.querySelector("#gallery").children].indexOf(event.target.parentNode.parentNode);
+      const cardSelected = results[index];
+      buildModal(cardSelected);
+    } else if (event.target.className === "card-info-container" || event.target.className === "card-img-container") {
+      const index = [...document.querySelector("#gallery").children].indexOf(event.target.parentNode);
+      const cardSelected = results[index];
+      buildModal(cardSelected);
+    } else if(event.target.className === "card-img-container" || event.target.className === "card-info-container") {
+      const index = [...document.querySelector("#gallery").children].indexOf(event.target.parentNode);
+      const cardSelected = results[index];
+      buildModal(cardSelected);
+    }
    });
 
 });
