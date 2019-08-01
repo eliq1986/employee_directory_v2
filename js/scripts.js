@@ -45,6 +45,9 @@ function checkIfClassMatches(cardClassArr ,cardClassName) {
  return cardClassArr.filter(possibleClassName => possibleClassName === cardClassName).length;
 }
 
+function createEmployeeDirectory(results) {
+  results.forEach( employeeProfile => appendCardsToDOM(employeeProfile));
+}
 
 //function buildModal({ picture, name, email, location}) {
 
@@ -80,24 +83,29 @@ function checkIfClassMatches(cardClassArr ,cardClassName) {
 //   });
 // }
 
+function getIndexOfCardClicked(parentNode) {
+  return [...document.querySelector("#gallery").children].indexOf(parentNode);
+}
 
 getRandomUsers().then(data => {
 
   const { results } = data;
 
-   results.forEach( profile => appendCardsToDOM(profile));
+  createEmployeeDirectory(results);
 
-   document.querySelector("#gallery").addEventListener("click", event=> {
-     const elementClassName = event.target.className;
-    if(checkIfClassMatches(cardClassName, elementClassName)) {
-      const index = [...document.querySelector("#gallery").children].indexOf(event.target.parentNode.parentNode);
-      const cardSelected = results[index];
-      buildModal(cardSelected);
-    } else if (checkIfClassMatches(cardParentClassName, elementClassName)) {
+   document.querySelector("#gallery").addEventListener("click", event => {
+
+     const clickedElementClassName = event.target.className;
+
+    if(checkIfClassMatches(cardClassName, clickedElementClassName)) {
+
+      const cardSelected = results[getIndexOfCardClicked(event.target.parentNode.parentNode)];
+      buildModal();
+  } else if (checkIfClassMatches(cardParentClassName, clickedElementClassName)) {
       // const index = [...document.querySelector("#gallery").children].indexOf(event.target.parentNode);
       // const cardSelected = results[index];
       // buildModal(cardSelected);
-    } else if(checkIfClassMatches(cardContainerClassName, elementClassName)){
+    } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)){
 
     }
    });
