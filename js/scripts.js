@@ -26,6 +26,7 @@ function appendCardsToDOM(profile) {
 
 
 function createHtmlCardTemplate({ picture, name, email, location }) {
+
   return `
   <div class="card">
       <div class="card-img-container">
@@ -45,47 +46,90 @@ function checkIfClassMatches(cardClassArr ,cardClassName) {
  return cardClassArr.filter(possibleClassName => possibleClassName === cardClassName).length;
 }
 
+
 function createEmployeeDirectory(results) {
   results.forEach( employeeProfile => appendCardsToDOM(employeeProfile));
 }
 
-//function buildModal({ picture, name, email, location}) {
+//As stated; formats DOB from 1989-05-02T23:27:04Z --> 05/02/1989
+function formatBirthday(birthdate) {
+ const yearMonthDayArr = birthdate.substring(0,10).split("-");
+ return `${yearMonthDayArr[1]}/${yearMonthDayArr[2]}/${yearMonthDayArr[0]}`;
+
+}
 
 
-//
-//   const body = document.querySelector("body");
-//   const modal = `
-//    <div class="modal-container">
-//       <div class="modal">
-//           <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-//           <div class="modal-info-container">
-//               <img class="modal-img" src=${picture.large} alt="profile picture">
-//               <h3 id="name" class="modal-name cap">${name.first} ${name.last}</h3>
-//               <p class="modal-text">${email}</p>
-//               <p class="modal-text cap">${location.city}</p>
-//               <hr>
-//               <p class="modal-text">(555) 555-5555</p>
-//               <p class="modal-text">${location.street}, ${location.state} ${location.postcode}</p>
-//               <p class="modal-text">Birthday: 10/21/2015</p>
-//           </div>
-//       </div>
-//   `
-//   body.insertAdjacentHTML("beforeend", modal);
-//   addEventListener();
-//
-// }
+function whenCardIsClicked(results) {
 
-// function addEventListener() {
-//   console.log("clicked");
-//   document.querySelector("#modal-close-btn").addEventListener("click",()=> {
-//     console.log("x was clicked");
-//       document.querySelector(".modal-container").style.display = "none";
-//   });
-// }
+  document.querySelector("#gallery").addEventListener("click", event => {
+
+    const clickedElementClassName = event.target.className;
+
+   if(checkIfClassMatches(cardClassName, clickedElementClassName)) {
+
+     const cardSelected = results[getIndexOfCardClicked(event.target.parentNode.parentNode)];
+     buildModal(cardSelected);
+
+ } else if (checkIfClassMatches(cardParentClassName, clickedElementClassName)) {
+
+      const cardSelected = results[getIndexOfCardClicked(event.target.parentNode)];
+      buildModal(cardSelected);
+
+   } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)){
+
+      const cardSelected = results[getIndexOfCardClicked(event.target)];
+      buildModal(cardSelected);
+   }
+  });
+
+}
+
+
+function tearDownPreviousModal() {
+  const modalContainer = document.querySelector(".modal-container");
+  if(modalContainer) {
+    const parent = modalContainer.parentNode;
+    parent.removeChild(modalContainer);
+  }
+}
+
+function buildModal({ picture, name, email, location, phone, dob }) {
+  tearDownPreviousModal();
+  const body = document.querySelector("body");
+  const div = document.createElement("div");
+  div.className = "modal-container";
+  const modal = `
+
+      <div class="modal">
+          <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
+          <div class="modal-info-container">
+              <img class="modal-img" src=${picture.large} alt="profile picture">
+              <h3 id="name" class="modal-name cap">${name.first} ${name.last}</h3>
+              <p class="modal-text">${email}</p>
+              <p class="modal-text cap">${location.city}</p>
+              <hr>
+              <p class="modal-text">${phone}</p>
+              <p class="modal-text cap">${location.street}, ${location.state} ${location.postcode}</p>
+              <p class="modal-text">Birthday: ${formatBirthday(dob.date)}</p>
+          </div>
+
+  `
+  div.innerHTML = modal;
+  const javaScriptFile = document.querySelector("script");
+  body.insertBefore(div, javaScriptFile);
+  document.querySelector("#modal-close-btn").addEventListener("click", ()=> {
+    document.querySelector(".modal-container").style.display = "none";
+
+  });
+
+}
+
+
 
 function getIndexOfCardClicked(parentNode) {
   return [...document.querySelector("#gallery").children].indexOf(parentNode);
 }
+
 
 getRandomUsers().then(data => {
 
@@ -93,21 +137,6 @@ getRandomUsers().then(data => {
 
   createEmployeeDirectory(results);
 
-   document.querySelector("#gallery").addEventListener("click", event => {
-
-     const clickedElementClassName = event.target.className;
-
-    if(checkIfClassMatches(cardClassName, clickedElementClassName)) {
-
-      const cardSelected = results[getIndexOfCardClicked(event.target.parentNode.parentNode)];
-      buildModal();
-  } else if (checkIfClassMatches(cardParentClassName, clickedElementClassName)) {
-      // const index = [...document.querySelector("#gallery").children].indexOf(event.target.parentNode);
-      // const cardSelected = results[index];
-      // buildModal(cardSelected);
-    } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)){
-
-    }
-   });
+  whenCardIsClicked(results);
 
 });
