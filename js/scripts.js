@@ -9,10 +9,10 @@ const { url , amount, nat, cardClassName, cardParentClassName, cardContainerClas
 }
 
 
-
 // returns array of objects
 async function getRandomUsers() {
   appendSearchBarToDOM();
+  appendModalToDOM();
    const response = await fetch(`${url}results=${amount}&nat=${nat}`);
    const users = await response.json();
    return users;
@@ -55,20 +55,21 @@ function createHTMLCardTemplate({ picture, name, email, location }) {
 
 }
 
-function createHTMLModalTemplate({ picture, name, email, location, phone, dob }) {
+
+function createHTMLModalTemplate() {
   return `
 
       <div class="modal">
           <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
           <div class="modal-info-container">
-              <img class="modal-img" src=${picture.large} alt="profile picture">
-              <h3 id="name" class="modal-name cap">${name.first} ${name.last}</h3>
-              <p class="modal-text">${email}</p>
-              <p class="modal-text cap">${location.city}</p>
+              <img class="modal-img" src="" alt="profile picture">
+              <h3 id="name" class="modal-name cap"></h3>
+              <p class="modal-text"></p>
+              <p class="modal-text cap"></p>
               <hr>
-              <p class="modal-text">${phone}</p>
-              <p class="modal-text cap">${location.street}, ${location.state} ${location.postcode}</p>
-              <p class="modal-text">Birthday: ${formatBirthday(dob.date)}</p>
+              <p class="modal-text"></p>
+              <p class="modal-text cap"></p>
+              <p class="modal-text">Birthday:</p>
 
               <div class="modal-btn-container">
                   <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
@@ -100,78 +101,65 @@ function formatBirthday(birthdate) {
 
 
 function whenCardIsClicked(results) {
-
   document.querySelector("#gallery").addEventListener("click", event => {
     const clickedElementClassName = event.target.className;
 
    if(checkIfClassMatches(cardClassName, clickedElementClassName)) {
-     const parent = event.target.parentNode.parentNode;
-
-     const cardSelected = results[getIndexOfCardClicked(parent)];
-     buildModal(cardSelected, parent);
+     const cardSelected = results[getIndexOfCardClicked(event.target.parentNode.parentNode)];
+     insertIntoModal(cardSelected);
+     whenModalButtonClicked(getIndexOfCardClicked(event.target.parentNode.parentNode), results);
 
  } else if (checkIfClassMatches(cardParentClassName, clickedElementClassName)) {
-
       const cardSelected = results[getIndexOfCardClicked(event.target.parentNode)];
-      const parent = event.target.parentNode;
-      buildModal(cardSelected, parent);
+      insertIntoModal(cardSelected);
 
-   } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)){
 
+   } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)) {
       const cardSelected = results[getIndexOfCardClicked(event.target)];
-      const parent = event.target;
-      buildModal(cardSelected, parent);
+      insertIntoModal(cardSelected);
    }
   });
 
+
+
+
 }
 
+function whenModalButtonClicked(index, results) {
+  document.querySelector(".modal-btn-container").addEventListener("click", (event)=> {
 
-function tearDownPreviousModal() {
-const modalContainer = document.querySelector(".modal-container");
-  if(modalContainer) {
-    const parent = modalContainer.parentNode;
-    parent.removeChild(modalContainer);
-  }
+    if(event.target.textContent === "Next" && index < 11) {
+      index += 1;
+      results[index] ? insertIntoModal(results[index]) : null;
+
+    } else if(event.target.textContent === "Prev" && index !== 0) {
+      index -= 1;
+      results[index] ? insertIntoModal(results[index]) : null;
+    }
+  });
 }
 
-function appendModalToDOM(cardSelected) {
+function appendModalToDOM() {
   const div = document.createElement("div");
   div.className = "modal-container";
-  div.innerHTML = createHTMLModalTemplate(cardSelected);
+  div.innerHTML = createHTMLModalTemplate();
   document.querySelector("body").insertBefore(div, document.querySelector("script"));
+  document.querySelector(".modal-container").style.display = "none";
+  addCloseListenerToModal();
 }
 
-function buildModal(cardSelected, parentElement) {
-  tearDownPreviousModal();
-  appendModalToDOM(cardSelected);
-  createModalCloseButton();
 
-  const modalArrows = document.querySelector(".modal-btn-container");
-  modalArrows.addEventListener("click", event => {
-      if(event.target.textContent === "Prev") {
-
-
-      } else if(event.target.textContent === "Next") {
-
-        const nextEmployee = parentElement.nextElementSibling;
-      }
-  });
-
-
-}
-
-function createModalCloseButton() {
+function addCloseListenerToModal(){
   document.querySelector("#modal-close-btn").addEventListener("click", ()=> {
     document.querySelector(".modal-container").style.display = "none";
   });
-
 }
 
 
 function getIndexOfCardClicked(parentNode) {
   return [...document.querySelector("#gallery").children].indexOf(parentNode);
 }
+
 
 function getSearchInput() {
    return searchValue = document.querySelector("#search-input").value.toLowerCase().split(" ");
@@ -189,6 +177,17 @@ function hideCards(searchInput) {
     }
   });
 
+}
+
+function insertIntoModal({picture, name, email, location, phone, dob}) {
+  document.querySelector(".modal-img").src = picture.large;
+  document.querySelector(".modal-name").textContent = `${name.first} ${name.last}`;
+  document.querySelectorAll(".modal-text")[0].textContent = email;
+  document.querySelectorAll(".modal-text")[1].textContent = location.state;
+  document.querySelectorAll(".modal-text")[2].textContent = phone;
+  document.querySelectorAll(".modal-text")[3].textContent = `${location.street}, ${location.state} ${location.postcode}`;
+  document.querySelectorAll(".modal-text")[4].textContent = formatBirthday(dob.date);
+  document.querySelector(".modal-container").style.display = "block";
 }
 
 
