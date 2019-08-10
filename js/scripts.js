@@ -8,11 +8,11 @@ const { url , amount, nat, cardClassName, cardParentClassName, cardContainerClas
   cardContainerClassName: ["card"]
 }
 
+appendSearchBarToDOM();
+appendModalToDOM();
 
 // returns array of objects
 async function getRandomUsers() {
-  appendSearchBarToDOM();
-  appendModalToDOM();
    const response = await fetch(`${url}results=${amount}&nat=${nat}`);
    const users = await response.json();
    return users;
@@ -58,7 +58,6 @@ function createHTMLCardTemplate({ picture, name, email, location }) {
 
 function createHTMLModalTemplate() {
   return `
-
       <div class="modal">
           <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
           <div class="modal-info-container">
@@ -101,6 +100,7 @@ function formatBirthday(birthdate) {
 
 
 function whenCardIsClicked(results) {
+
   document.querySelector("#gallery").addEventListener("click", event => {
     const clickedElementClassName = event.target.className;
 
@@ -112,11 +112,12 @@ function whenCardIsClicked(results) {
  } else if (checkIfClassMatches(cardParentClassName, clickedElementClassName)) {
       const cardSelected = results[getIndexOfCardClicked(event.target.parentNode)];
       insertIntoModal(cardSelected);
-
+      whenModalButtonClicked(getIndexOfCardClicked(event.target.parentNode), results);
 
    } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)) {
       const cardSelected = results[getIndexOfCardClicked(event.target)];
       insertIntoModal(cardSelected);
+      whenModalButtonClicked(getIndexOfCardClicked(event.target), results);
    }
   });
 
@@ -127,7 +128,6 @@ function whenCardIsClicked(results) {
 
 function whenModalButtonClicked(index, results) {
   document.querySelector(".modal-btn-container").addEventListener("click", (event)=> {
-
     if(event.target.textContent === "Next" && index < 11) {
       index += 1;
       results[index] ? insertIntoModal(results[index]) : null;
@@ -140,19 +140,27 @@ function whenModalButtonClicked(index, results) {
 }
 
 function appendModalToDOM() {
+  document.querySelector("body").insertBefore(createModalContainer(), document.querySelector("script"));
+  addCloseListenerToModal();
+}
+
+function createModalContainer() {
   const div = document.createElement("div");
   div.className = "modal-container";
   div.innerHTML = createHTMLModalTemplate();
-  document.querySelector("body").insertBefore(div, document.querySelector("script"));
-  document.querySelector(".modal-container").style.display = "none";
-  addCloseListenerToModal();
+  return div;
 }
 
 
 function addCloseListenerToModal(){
+  modalDisplayNone();
   document.querySelector("#modal-close-btn").addEventListener("click", ()=> {
-    document.querySelector(".modal-container").style.display = "none";
+    modalDisplayNone();
   });
+}
+
+function modalDisplayNone() {
+   document.querySelector(".modal-container").style.display = "none";
 }
 
 
@@ -168,18 +176,16 @@ function getSearchInput() {
 
 function hideCards(searchInput) {
 
-  const allNames = document.querySelectorAll(".card-name");
-  allNames.forEach(person => {
+document.querySelectorAll(".card-name").forEach(person => {
   const [firstName, lastName] = person.textContent.split(" ");
   if(searchInput.indexOf(firstName) === -1 && searchInput.indexOf(lastName) === -1) {
-     const parent = person.parentNode.parentNode;
-     parent.style.display = "none";
+      person.parentNode.parentNode.style.display = "none";
     }
   });
 
 }
 
-function insertIntoModal({picture, name, email, location, phone, dob}) {
+function insertIntoModal({ picture, name, email, location, phone, dob }) {
   document.querySelector(".modal-img").src = picture.large;
   document.querySelector(".modal-name").textContent = `${name.first} ${name.last}`;
   document.querySelectorAll(".modal-text")[0].textContent = email;
@@ -192,7 +198,6 @@ function insertIntoModal({picture, name, email, location, phone, dob}) {
 
 
 getRandomUsers().then(data => {
-
   const { results } = data;
 
   createEmployeeDirectory(results);
@@ -201,8 +206,8 @@ getRandomUsers().then(data => {
 
 });
 
-document.querySelector("#search-submit").addEventListener("click", (e)=> {
-  e.preventDefault();
+document.querySelector("#search-submit").addEventListener("click", event => {
+  event.preventDefault();
   const searchInput = getSearchInput();
   hideCards(searchInput);
 });
