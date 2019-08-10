@@ -30,7 +30,7 @@ function appendSearchBarToDOM() {
 }
 
 
-// function takes 1 arg obj;
+// function takes 1 arg obj; appends card template to DOM
 function appendCardsToDOM(profile) {
   const galleryDiv = document.querySelector("#gallery");
   const htmlCardTemplate= createHTMLCardTemplate(profile);
@@ -38,6 +38,7 @@ function appendCardsToDOM(profile) {
 }
 
 
+// function takes obj; returns html template
 function createHTMLCardTemplate({ picture, name, email, location }) {
 
   return `
@@ -56,6 +57,7 @@ function createHTMLCardTemplate({ picture, name, email, location }) {
 }
 
 
+// function takes no arg; returns html modal template
 function createHTMLModalTemplate() {
   return `
       <div class="modal">
@@ -82,14 +84,17 @@ function createHTMLModalTemplate() {
 }
 
 
+// function takes 2 arg array, event.target.className; returns array length.
 function checkIfClassMatches(cardClassArr ,cardClassName) {
  return cardClassArr.filter(possibleClassName => possibleClassName === cardClassName).length;
 }
 
 
+// function takes 1 arg results array from random api. Calls appendCardsToDOM for each random person
 function createEmployeeDirectory(results) {
   results.forEach( employeeProfile => appendCardsToDOM(employeeProfile));
 }
+
 
 //As stated; formats DOB from 1989-05-02T23:27:04Z --> 05/02/1989
 function formatBirthday(birthdate) {
@@ -99,6 +104,7 @@ function formatBirthday(birthdate) {
 }
 
 
+// function takes 1 arg results array; captures index of card clicked.
 function whenCardIsClicked(results) {
 
   document.querySelector("#gallery").addEventListener("click", event => {
@@ -126,6 +132,8 @@ function whenCardIsClicked(results) {
 
 }
 
+
+// function takes 2 arg;  index and results array
 function whenModalButtonClicked(index, results) {
   document.querySelector(".modal-btn-container").addEventListener("click", (event)=> {
     if(event.target.textContent === "Next" && index < 11) {
@@ -139,11 +147,15 @@ function whenModalButtonClicked(index, results) {
   });
 }
 
+
+// function takes no arg; inserts modal into DOM with close button event listener.
 function appendModalToDOM() {
   document.querySelector("body").insertBefore(createModalContainer(), document.querySelector("script"));
   addCloseListenerToModal();
 }
 
+
+// function takes no arg; creates modal container div and set innerHTML to modal template
 function createModalContainer() {
   const div = document.createElement("div");
   div.className = "modal-container";
@@ -152,39 +164,63 @@ function createModalContainer() {
 }
 
 
+// function takes no arg; add event listener to modal
 function addCloseListenerToModal(){
   modalDisplayNone();
-  document.querySelector("#modal-close-btn").addEventListener("click", ()=> {
-    modalDisplayNone();
-  });
+  document.querySelector("#modal-close-btn").addEventListener("click", modalDisplayNone);
 }
 
+
+// function takes no arg; sets modal display none
 function modalDisplayNone() {
    document.querySelector(".modal-container").style.display = "none";
 }
 
 
+// function returns index of event clicked takes 1 arg clicked card parentNode
 function getIndexOfCardClicked(parentNode) {
   return [...document.querySelector("#gallery").children].indexOf(parentNode);
 }
 
 
+// function takes no arg; returns searchValue from input
 function getSearchInput() {
-   return searchValue = document.querySelector("#search-input").value.toLowerCase().split(" ");
+  const searchValue = document.querySelector("#search-input").value.toLowerCase().trim();
+  if(!searchValue.length) {
+    return searchValue;
+  }
+   return searchValue.split(" ");
 }
 
 
+// function takes search value
 function hideCards(searchInput) {
-
 document.querySelectorAll(".card-name").forEach(person => {
   const [firstName, lastName] = person.textContent.split(" ");
-  if(searchInput.indexOf(firstName) === -1 && searchInput.indexOf(lastName) === -1) {
+  if(!searchInput.includes(firstName) && !searchInput.includes(lastName)) {
       person.parentNode.parentNode.style.display = "none";
     }
   });
 
 }
 
+
+// function takes no arg; displays all employee cards
+function showCards() {
+    document.querySelectorAll(".card").forEach(profile => profile.style.display = "");
+}
+
+
+function whenSearchSubmitted() {
+  document.querySelector("#search-submit").addEventListener("click", event => {
+    event.preventDefault();
+    const searchInput = getSearchInput();
+    searchInput.length !== 0 ? hideCards(searchInput) : showCards();
+  });
+}
+
+
+// function takes obj arg; object is destructered and prop are added to modal
 function insertIntoModal({ picture, name, email, location, phone, dob }) {
   document.querySelector(".modal-img").src = picture.large;
   document.querySelector(".modal-name").textContent = `${name.first} ${name.last}`;
@@ -198,16 +234,12 @@ function insertIntoModal({ picture, name, email, location, phone, dob }) {
 
 
 getRandomUsers().then(data => {
+
   const { results } = data;
 
   createEmployeeDirectory(results);
 
   whenCardIsClicked(results);
 
-});
-
-document.querySelector("#search-submit").addEventListener("click", event => {
-  event.preventDefault();
-  const searchInput = getSearchInput();
-  hideCards(searchInput);
+  whenSearchSubmitted();
 });
