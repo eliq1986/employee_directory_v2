@@ -233,6 +233,14 @@ function insertIntoModal({ picture, name, email, location, phone, dob }) {
 }
 
 
+// function takes no arg; displays error message if api doesnt connect
+function errorMessage() {
+  document.querySelector("#gallery").innerHTML = `
+    <h2>Sorry, but request cannot be fulfilled. Please check your connection
+  `
+}
+
+
 getRandomUsers().then(data => {
 
   const { results } = data;
@@ -242,4 +250,4 @@ getRandomUsers().then(data => {
   whenCardIsClicked(results);
 
   whenSearchSubmitted();
-});
+}).catch(errorMessage);
