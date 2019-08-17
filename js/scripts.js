@@ -94,8 +94,8 @@ const createEmployeeDirectory = results => results.forEach(appendCardsToDOM);
 
 //As stated; formats DOB from 1989-05-02T23:27:04Z --> 05/02/1989
 function formatBirthday(birthdate) {
- const yearMonthDayArr = birthdate.substring(0,10).split("-");
- return `${yearMonthDayArr[1]}/${yearMonthDayArr[2]}/${yearMonthDayArr[0]}`;
+ const [year, month, day] = birthdate.substring(0,10).split("-");
+  return `${month}/${day}/${year}`;
 
 }
 
