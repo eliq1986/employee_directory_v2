@@ -90,10 +90,7 @@ function checkIfClassMatches(cardClassArr ,cardClassName) {
 
 
 // function takes 1 arg results array from random api. Calls appendCardsToDOM for each random person
-function createEmployeeDirectory(results) {
-  results.forEach( employeeProfile => appendCardsToDOM(employeeProfile));
-}
-
+const createEmployeeDirectory = results => results.forEach(appendCardsToDOM);
 
 //As stated; formats DOB from 1989-05-02T23:27:04Z --> 05/02/1989
 function formatBirthday(birthdate) {
