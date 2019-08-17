@@ -189,10 +189,10 @@ function getSearchInput() {
 // function takes search value
 function hideCards(searchInput) {
 document.querySelectorAll(".card-name").forEach(person => {
-  const [firstName, lastName] = person.textContent.split(" ");
-  if(!searchInput.includes(firstName) && !searchInput.includes(lastName)) {
-      person.parentNode.parentNode.style.display = "none";
-    }
+const personName = person.textContent;
+     if(personName.indexOf(searchInput) === -1) {
+       person.parentNode.parentNode.style.display = "none";
+     }
   });
 
 }
