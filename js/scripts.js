@@ -200,10 +200,15 @@ const personName = person.textContent;
 
 // function takes no arg; displays all employee cards
 function showCards() {
-    document.querySelectorAll(".card").forEach(profile => profile.style.display = "");
+    document.querySelectorAll(".card").forEach(setDisplayEmptyString);
 }
 
 
+// function takes obj arg; sets display value -> ""
+const setDisplayEmptyString = profile => profile.style.display = "";
+
+
+//
 function whenSearchSubmitted() {
   document.querySelector("#search-submit").addEventListener("click", event => {
     event.preventDefault();
