@@ -105,33 +105,30 @@ function whenCardIsClicked(results) {
 
   document.querySelector("#gallery").addEventListener("click", event => {
     const clickedElementClassName = event.target.className;
+    let cardSelected = "";
+
 
    if(checkIfClassMatches(cardClassName, clickedElementClassName)) {
-     const cardSelected = results[getIndexOfCardClicked(event.target.parentNode.parentNode)];
-     insertIntoModal(cardSelected);
+     cardSelected = results[getIndexOfCardClicked(event.target.parentNode.parentNode)];
      whenModalButtonClicked(getIndexOfCardClicked(event.target.parentNode.parentNode), results);
 
  } else if (checkIfClassMatches(cardParentClassName, clickedElementClassName)) {
-      const cardSelected = results[getIndexOfCardClicked(event.target.parentNode)];
-      insertIntoModal(cardSelected);
+      cardSelected = results[getIndexOfCardClicked(event.target.parentNode)];
       whenModalButtonClicked(getIndexOfCardClicked(event.target.parentNode), results);
 
    } else if(checkIfClassMatches(cardContainerClassName, clickedElementClassName)) {
-      const cardSelected = results[getIndexOfCardClicked(event.target)];
-      insertIntoModal(cardSelected);
+      cardSelected = results[getIndexOfCardClicked(event.target)];
       whenModalButtonClicked(getIndexOfCardClicked(event.target), results);
    }
+   insertIntoModal(cardSelected);
   });
-
-
-
 
 }
 
 
 // function takes 2 arg;  index and results array
 function whenModalButtonClicked(index, results) {
-  document.querySelector(".modal-btn-container").addEventListener("click", (event)=> {
+  document.querySelector(".modal-btn-container").addEventListener("click", event=> {
     if(event.target.textContent === "Next" && index < 11) {
       index += 1;
       results[index] ? insertIntoModal(results[index]) : null;
