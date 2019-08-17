@@ -32,9 +32,8 @@ function appendSearchBarToDOM() {
 
 // function takes 1 arg obj; appends card template to DOM
 function appendCardsToDOM(profile) {
-  const galleryDiv = document.querySelector("#gallery");
   const htmlCardTemplate= createHTMLCardTemplate(profile);
-  galleryDiv.insertAdjacentHTML("beforeend", htmlCardTemplate);
+  document.querySelector("#gallery").insertAdjacentHTML("beforeend", htmlCardTemplate);
 }
 
 
