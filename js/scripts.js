@@ -8,8 +8,6 @@ const { url , amount, nat, cardClassName, cardParentClassName, cardContainerClas
   cardContainerClassName: ["card"]
 }
 
-appendSearchBarToDOM();
-appendModalToDOM();
 
 // returns array of objects
 async function getRandomUsers() {
@@ -19,15 +17,15 @@ async function getRandomUsers() {
 }
 
 
-// takes no arg; appends HTML to DOM.
-function appendSearchBarToDOM() {
+// IIFE takes no arg; appends HTML to DOM.
+(function appendSearchBarToDOM() {
   document.querySelector(".search-container").innerHTML = `
     <form action="#" method="get">
         <input type="search" id="search-input" class="search-input" placeholder="Search...">
         <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
     </form>
   `;
-}
+})();
 
 
 // function takes 1 arg obj; appends card template to DOM
@@ -142,10 +140,10 @@ function whenModalButtonClicked(index, results) {
 
 
 // function takes no arg; inserts modal into DOM with close button event listener.
-function appendModalToDOM() {
+(function appendModalToDOM() {
   document.querySelector("body").insertBefore(createModalContainer(), document.querySelector("script"));
   addCloseListenerToModal();
-}
+})();
 
 
 // function takes no arg; creates modal container div and set innerHTML to modal template
