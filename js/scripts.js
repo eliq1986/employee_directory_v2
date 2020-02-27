@@ -186,11 +186,15 @@ function getSearchInput() {
 
 // function takes search value
 function hideCards(searchInput) {
-document.querySelectorAll(".card-name").forEach(person => {
-const personName = person.textContent;
-     if(personName.indexOf(searchInput) === -1) {
-       person.parentNode.parentNode.style.display = "none";
-     }
+ document.querySelectorAll(".card-name").forEach(person => {
+  const [firstName, lastName] = person.textContent.toLowerCase().split(" ");
+     searchInput.forEach(searchWord => {
+       if(firstName.indexOf(searchWord.toLowerCase()) !== -1 || lastName.indexOf(searchWord.toLowerCase()) !== -1) {
+           person.parentNode.parentNode.style.display = "";
+       } else {
+         person.parentNode.parentNode.style.display = "none";
+       }
+     });
   });
 
 }
@@ -246,4 +250,5 @@ getRandomUsers().then(data => {
   whenCardIsClicked(results);
 
   whenSearchSubmitted();
+
 }).catch(errorMessage);
