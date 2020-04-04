@@ -124,7 +124,7 @@ function whenCardIsClicked(results) {
       cardSelected = results[getIndexOfCardClicked(event.target)];
       whenModalButtonClicked(getIndexOfCardClicked(event.target), results);
    }
-   console.log(cardSelected)
+
    insertIntoModal(cardSelected);
   });
 
@@ -248,10 +248,7 @@ function errorMessage() {
 }
 
 
-getRandomUsers().then(data => {
-
-
-  const { results } = data;
+getRandomUsers().then(({ results }) => {
 
   createEmployeeDirectory(results);
 
