@@ -10,9 +10,16 @@ const { url , amount, nat, cardClassName, cardParentClassName, cardContainerClas
 
 // returns array of objects
 async function getRandomUsers() {
-   const response = await fetch(`${url}results=${amount}&nat=${nat}`);
-   const users = await response.json();
-   return users;
+
+  try {
+    const response = await fetch(`${url}results=${amount}&nat=${nat}`);
+    const users = await response.json();
+    return users;
+  }catch(e){
+    throw new Error("There appears to be an error:",e);
+  }
+
+
 }
 
 
@@ -117,6 +124,7 @@ function whenCardIsClicked(results) {
       cardSelected = results[getIndexOfCardClicked(event.target)];
       whenModalButtonClicked(getIndexOfCardClicked(event.target), results);
    }
+   console.log(cardSelected)
    insertIntoModal(cardSelected);
   });
 
@@ -226,7 +234,7 @@ function insertIntoModal({ picture, name, email, location, phone, dob }) {
   document.querySelectorAll(".modal-text")[0].textContent = email;
   document.querySelectorAll(".modal-text")[1].textContent = location.state;
   document.querySelectorAll(".modal-text")[2].textContent = phone;
-  document.querySelectorAll(".modal-text")[3].textContent = `${location.street}, ${location.state} ${location.postcode}`;
+  document.querySelectorAll(".modal-text")[3].textContent = `${location.street.number} ${location.street.name}, ${location.state} ${location.postcode}`;
   document.querySelectorAll(".modal-text")[4].textContent = formatBirthday(dob.date);
   document.querySelector(".modal-container").style.display = "block";
 }
@@ -241,6 +249,7 @@ function errorMessage() {
 
 
 getRandomUsers().then(data => {
+
 
   const { results } = data;
 
